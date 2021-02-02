@@ -108,9 +108,23 @@ class Listing {
 
     if (!listing) throw new NotFoundError(`No listing: ${handle}`);
 
-    // TODO: Add host information to the listing
+    const hostRes = await db.query(
+      `SELECT username,
+              first_name AS "firstName",
+              last_name AS "lastName"
+           FROM users
+           WHERE id = $1`,
+      [listing.hostId],
+    );
+
+    const host = hostRes.rows[0];
+
+    listing.host = host;
+    delete listing.hostId;
+
     return listing;
   }
+
   /** Given a search term, return relevant listings.
    *
    * Returns [ { id, name, price, zipcode, capacity, amenitites, photoUrl }, ...]

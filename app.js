@@ -8,10 +8,10 @@ const cors = require("cors");
 const { NotFoundError } = require("./expressError");
 
 const { authenticateJWT } = require("./middleware/auth");
-// const authRoutes = require("./routes/auth");
+const authRoutes = require("./routes/auth");
 const listingsRoutes = require("./routes/listings");
 // const jobsRoutes = require("./routes/jobs");
-// const usersRoutes = require("./routes/users");
+const usersRoutes = require("./routes/users");
 
 const morgan = require("morgan");
 
@@ -22,10 +22,10 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
-// app.use("/auth", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/listings", listingsRoutes);
 // app.use("/jobs", jobsRoutes);
-// app.use("/users", usersRoutes);
+app.use("/users", usersRoutes);
 
 
 /** Handle 404 errors -- this matches everything */

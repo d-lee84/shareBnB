@@ -41,23 +41,22 @@ router.post("/", ensureAdmin, async function (req, res, next) {
 });
 
 
-/** GET / => { users: [ {username, firstName, lastName, email, jobs }, ... ] }
- *          where jobs: [ jobId, jobId, ...]
+/** GET / => { users: [ {username, firstName, lastName, email }, ... ] }
  * Returns list of all users.
  *
  * Authorization required: admin
  **/
 
-router.get("/", ensureAdmin, async function (req, res, next) {
-  const users = await User.findAll();
-  return res.json({ users });
-});
+// router.get("/", ensureAdmin, async function (req, res, next) {
+//   const users = await User.findAll();
+//   return res.json({ users });
+// });
 
 
-/** GET /[username] => { user }
+/** GET users/[username] => { user }
  *
- * Returns { username, firstName, lastName, isAdmin, jobs }
- *      where jobs: [ jobId, jobId, ...]
+ * Returns { username, firstName, lastName, isAdmin }
+ *      
  * Authorization required: admin or self
  **/
 

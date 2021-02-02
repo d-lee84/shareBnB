@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const bcrypt = require("bcrypt");
-const { sqlForPartialUpdate } = require("../helpers/sql");
+// const { sqlForPartialUpdate } = require("../helpers/sql");
 const {
   NotFoundError,
   BadRequestError,
@@ -10,9 +10,6 @@ const {
 } = require("../expressError");
 
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
-const STATES = new Set(['interested', 'applied', 'accepted', 'rejected']);
-
-const generator = require("generate-password");
 
 /** Related functions for users. */
 
@@ -72,8 +69,6 @@ class User {
       throw new BadRequestError(`Duplicate username: ${username}`);
     }
 
-    password = password || User._generateRandomPassword(10);
-
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
@@ -129,13 +124,13 @@ class User {
 
     // [{username, jobId}, ...]
     let userJobInfos = usersJobsResult.rows;
-    
+
     //  {"u1": [j1, j2]}
     let usernameToJobs = {};
 
 
     for (let userJobInfo of userJobInfos) {
-      let {username, jobId} = userJobInfo;
+      let { username, jobId } = userJobInfo;
 
       if (usernameToJobs[username] === undefined) {
         usernameToJobs[username] = [jobId];
@@ -144,7 +139,7 @@ class User {
       }
     }
 
-    for(let user of users) {
+    for (let user of users) {
       user.jobs = usernameToJobs[user.username] || [];
     }
 
@@ -153,8 +148,7 @@ class User {
 
   /** Given a username, return data about user.
    *
-   * Returns { username, first_name, last_name, is_admin, jobs }
-   *   where jobs is [ jobId, jobId, ...]
+   * Returns { username, first_name, last_name, is_admin }
    *
    * Throws NotFoundError if user not found.
    **/
@@ -174,14 +168,6 @@ class User {
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
-
-    const jobRes = await db.query(
-      `SELECT job_id AS "jobId"
-           FROM applications
-           WHERE username = $1`,
-           [username]);
-
-    user.jobs = jobRes.rows.map(j => j.jobId);
 
     return user;
   }
@@ -290,7 +276,7 @@ class User {
       VALUES ($1, $2, 'applied')`, [username, jobId]);
   }
 
-  
+
   /** Given a username and jobId and status, update status for
    * job application.
    * 
@@ -298,54 +284,47 @@ class User {
    * Throw bad request error if state is invalid
   */
 
- static async updateAppStatus(username, jobId, state) {
-  // check if job exists
-  const jobRes = await db.query(
-    `SELECT id
+  static async updateAppStatus(username, jobId, state) {
+    // check if job exists
+    const jobRes = await db.query(
+      `SELECT id
          FROM jobs
          WHERE id = $1`,
-    [jobId]);
-  const job = jobRes.rows[0];
-  if (!job) throw new NotFoundError(`No job: ${jobId}`);
+      [jobId]);
+    const job = jobRes.rows[0];
+    if (!job) throw new NotFoundError(`No job: ${jobId}`);
 
-  // check if user exists
-  const userRes = await db.query(
-    `SELECT username
+    // check if user exists
+    const userRes = await db.query(
+      `SELECT username
          FROM users
          WHERE username = $1`,
-    [username],
-  );
-  const user = userRes.rows[0];
-  if (!user) throw new NotFoundError(`No user: ${username}`);
+      [username],
+    );
+    const user = userRes.rows[0];
+    if (!user) throw new NotFoundError(`No user: ${username}`);
 
-  // check if application exists
-  const appRes = await db.query(
-    `SELECT username, job_id AS "jobId"
+    // check if application exists
+    const appRes = await db.query(
+      `SELECT username, job_id AS "jobId"
         FROM applications 
         WHERE username=$1 AND job_id = $2`,
-    [username, jobId]);
-  const application = appRes.rows[0];
-  if (!application) throw new NotFoundError(`
+      [username, jobId]);
+    const application = appRes.rows[0];
+    if (!application) throw new NotFoundError(`
     No application: ${username}, ${jobId}`);
 
-  // check if state is valid
-  if (STATES.has(state) === false) throw new BadRequestError(`
+    // check if state is valid
+    if (STATES.has(state) === false) throw new BadRequestError(`
     Invalid state: ${state}`);
 
-  // update job application
-  await db.query(`
+    // update job application
+    await db.query(`
     UPDATE applications 
     SET state=$1
-    WHERE username=$2 AND job_id=$3`, [state, username, jobId ]);
-}
-  /** Generates a password of length made up of letters and numbers*/
-  static _generateRandomPassword(length=10){
-    // Generate a random password
-    return generator.generate({
-      length,
-      numbers: true
-    });
+    WHERE username=$2 AND job_id=$3`, [state, username, jobId]);
   }
+
 }
 
 

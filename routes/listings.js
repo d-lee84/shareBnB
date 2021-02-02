@@ -75,6 +75,7 @@ router.get("/search", async function (req, res, next) {
  *  Gets a single listing for Listing Detail page.
  *  listing is
  *    { id, name, price, zipcode, capacity, photo_url, description, amenities, host }
+ * 
  *   where host is {username, first_name, last_name }
  *
  * Authorization required: none
