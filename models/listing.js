@@ -45,10 +45,10 @@ class Listing {
   }
 
   /** Find all listings.
-   * 
+   *
    * Takes in optional filter object which can include:
    *  {name}
-   * 
+   *
    * Returns [ { id, name, price, zipcode, capacity, photoUrl }, ...]
    * */
 
@@ -88,7 +88,7 @@ class Listing {
     const listing = listingRes.rows[0];
 
     if (!listing) throw new NotFoundError(`No listing: ${handle}`);
-    
+
     // Get all the jobs for this listing
     listing.jobs = await Job.findAllBylistingHandle(handle);
 
@@ -116,13 +116,13 @@ class Listing {
         });
     const handleVarIdx = "$" + (values.length + 1);
 
-    const querySql = `UPDATE listings 
-                      SET ${setCols} 
-                      WHERE handle = ${handleVarIdx} 
-                      RETURNING handle, 
-                                name, 
-                                description, 
-                                num_employees AS "numEmployees", 
+    const querySql = `UPDATE listings
+                      SET ${setCols}
+                      WHERE handle = ${handleVarIdx}
+                      RETURNING handle,
+                                name,
+                                description,
+                                num_employees AS "numEmployees",
                                 logo_url AS "logoUrl"`;
     const result = await db.query(querySql, [...values, handle]);
     const listing = result.rows[0];
@@ -149,23 +149,23 @@ class Listing {
     if (!listing) throw new NotFoundError(`No listing: ${handle}`);
   }
 
-  /** Translate data to filter into SQL Format. 
+  /** Translate data to filter into SQL Format.
  * Takes in:
  *  filterBy: JS object with key-value pairs to filter in database
- * 
+ *
  * Returns:
- *  whereCols: string that contains the where clause of the SQL query 
+ *  whereCols: string that contains the where clause of the SQL query
  *             if filterBy has minEmployees, maxEmployees or name
  *             - empty string if the keys above are not present
  *  values: array of values to search by in the SQL query
  *          - empty array if keys are not present
- *  
- *  Example: 
- * { 
+ *
+ *  Example:
+ * {
  *    whereCols: "WHERE num_employees >= $1 AND name ILIKE $2",
  *    values: [4, '%searchTerm%']
  * }
- * 
+ *
 */
 
 static _sqlForPartialFilter(filters={}) {
@@ -182,7 +182,7 @@ static _sqlForPartialFilter(filters={}) {
 
   if (minEmployees && maxEmployees && +minEmployees > +maxEmployees) {
     throw new BadRequestError(
-      `Min employees: ${minEmployees} cannot be larger than max 
+      `Min employees: ${minEmployees} cannot be larger than max
         employees: ${maxEmployees}`);
   }
 
