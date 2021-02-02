@@ -1,0 +1,29 @@
+{
+  "name": "shareBnB",
+  "version": "1.0.0",
+  "description": "### ShareB&B As we move towards a world where people share more and more things, it’s time we build an application where users can share outdoor spaces like backyards or pools!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d-lee84/shareBnB.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/d-lee84/shareBnB/issues"
+  },
+  "homepage": "https://github.com/d-lee84/shareBnB#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^5.0.0-alpha.8",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "pg": "^8.5.1"
+  }
+}
