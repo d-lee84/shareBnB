@@ -51,24 +51,40 @@ router.get("/", async function (req, res, next) {
   //   const errs = validator.errors.map(e => e.stack);
   //   throw new BadRequestError(errs);
   // }
-  
+
   const listings = await Listing.findAll();
   return res.json({ listings });
 });
 
-/** GET /listings/[id]  =>  { listing }
- *
- *  listing is 
+/** GET /listings/search  =>  { listing }
+ *  Gets filtered listings for search
+ *  listing is
  *    { id, name, price, zipcode, capacity, photo_url, description, amenities, host }
  *   where host is {username, first_name, last_name }
  *
  * Authorization required: none
  */
 
-router.get("/:handle", async function (req, res, next) {
-  const listing = await Listing.get(req.params.handle);
+router.get("/search", async function (req, res, next) {
+  const q = req.query;
+  const listing = await Listing.search(q.term);
   return res.json({ listing });
 });
+
+/** GET /listings/[id]  =>  { listing }
+ *  Gets a single listing for Listing Detail page.
+ *  listing is
+ *    { id, name, price, zipcode, capacity, photo_url, description, amenities, host }
+ *   where host is {username, first_name, last_name }
+ *
+ * Authorization required: none
+ */
+
+router.get("/:id", async function (req, res, next) {
+  const listing = await Listing.get(req.params.id);
+  return res.json({ listing });
+});
+
 
 /** PATCH /[handle] { fld1, fld2, ... } => { listing }
  *
@@ -81,25 +97,25 @@ router.get("/:handle", async function (req, res, next) {
  * Authorization required: admin
  */
 
-router.patch("/:handle", ensureAdmin, async function (req, res, next) {
-  const validator = jsonschema.validate(req.body, listingUpdateSchema);
-  if (!validator.valid) {
-    const errs = validator.errors.map(e => e.stack);
-    throw new BadRequestError(errs);
-  }
+// router.patch("/:handle", ensureAdmin, async function (req, res, next) {
+//   const validator = jsonschema.validate(req.body, listingUpdateSchema);
+//   if (!validator.valid) {
+//     const errs = validator.errors.map(e => e.stack);
+//     throw new BadRequestError(errs);
+//   }
 
-  const listing = await Listing.update(req.params.handle, req.body);
-  return res.json({ listing });
-});
+//   const listing = await Listing.update(req.params.handle, req.body);
+//   return res.json({ listing });
+// });
 
 /** DELETE /[handle]  =>  { deleted: handle }
  *
  * Authorization: admin
  */
 
-router.delete("/:handle", ensureAdmin, async function (req, res, next) {
-  await Listing.remove(req.params.handle);
-  return res.json({ deleted: req.params.handle });
+router.delete("/:id", ensureAdmin, async function (req, res, next) {
+  await Listing.remove(req.params.id);
+  return res.json({ deleted: req.params.id });
 });
 
 

@@ -1,27 +1,3 @@
--- both test users have the password "password"
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(25),
-    password TEXT NOT NULL,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    email TEXT NOT NULL
-        CHECK (position('@' IN email) > 1),
-    is_admin BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-CREATE TABLE listings (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    price NUMERIC(6, 2) NOT NULL, 
-    zipcode VARCHAR(10) NOT NULL,
-    capacity INTEGER CHECK (capacity < 13),
-    description TEXT,
-    amenities TEXT,
-    photo_url TEXT,
-    host_id INTEGER REFERENCES users
-);
-
 
 INSERT INTO users (username, password, first_name, last_name, email, is_admin)
 VALUES ('testuser',
@@ -39,7 +15,7 @@ VALUES ('testuser',
 
 INSERT INTO listings (
                 name,
-                price, 
+                price,
                 zipcode,
                 capacity,
                 description,

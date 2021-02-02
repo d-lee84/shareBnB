@@ -9,34 +9,47 @@ const { BadRequestError, NotFoundError } = require("../expressError");
 class Listing {
   /** Create a listing (from data), update db, return new listing data.
    *
-   * data should be { handle, name, description, numEmployees, logoUrl }
-   *
-   * Returns { handle, name, description, numEmployees, logoUrl }
+   * { name, price, zipcode, capacity, description, amenities, photo_url, host_id }
    *
    * Throws BadRequestError if listing already in database.
    * */
 
-  static async create({ handle, name, description, numEmployees, logoUrl }) {
-    const duplicateCheck = await db.query(
-          `SELECT handle
-           FROM listings
-           WHERE handle = $1`,
-        [handle]);
-
-    if (duplicateCheck.rows[0])
-      throw new BadRequestError(`Duplicate listing: ${handle}`);
-
+  static async create({name,
+                       price,
+                       zipcode,
+                       capacity,
+                       description,
+                       amenities,
+                       photo_url,
+                       host_id }) {
     const result = await db.query(
           `INSERT INTO listings
-           (handle, name, description, num_employees, logo_url)
-           VALUES ($1, $2, $3, $4, $5)
-           RETURNING handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl"`,
+           (name,
+            price,
+            zipcode,
+            capacity,
+            description,
+            amenities,
+            photo_url,
+            host_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           RETURNING  name,
+                      price,
+                      zipcode,
+                      capacity,
+                      description,
+                      amenities,
+                      photo_url,
+                      host_id`,
         [
-          handle,
           name,
+          price,
+          zipcode,
+          capacity,
           description,
-          numEmployees,
-          logoUrl,
+          amenities,
+          photo_url,
+          host_id
         ],
     );
     const listing = result.rows[0];
@@ -60,6 +73,7 @@ class Listing {
                   price,
                   zipcode,
                   capacity,
+                  amenities,
                   photo_url AS "photoUrl"
            FROM listings
            ORDER BY zipcode`);
@@ -68,31 +82,60 @@ class Listing {
 
   /** Given a listing handle, return data about listing.
    *
-   * Returns { handle, name, description, numEmployees, logoUrl, jobs }
+   * Returns [ { id, name, price, zipcode, capacity, photoUrl }, ...]
+
    *   where jobs is [{ id, title, salary, equity }, ...]
    *
    * Throws NotFoundError if not found.
    **/
 
-  static async get(handle) {
+  static async get(id) {
     const listingRes = await db.query(
-          `SELECT handle,
+          `SELECT id,
                   name,
                   description,
-                  num_employees AS "numEmployees",
-                  logo_url AS "logoUrl"
+                  price,
+                  zipcode,
+                  capacity,
+                  amenities,
+                  host_id AS "hostId",
+                  photo_url AS "photoUrl"
            FROM listings
-           WHERE handle = $1`,
-        [handle]);
+           WHERE id = $1`,
+        [id]);
 
     const listing = listingRes.rows[0];
 
     if (!listing) throw new NotFoundError(`No listing: ${handle}`);
 
-    // Get all the jobs for this listing
-    listing.jobs = await Job.findAllBylistingHandle(handle);
-
+    // TODO: Add host information to the listing
     return listing;
+  }
+  /** Given a search term, return relevant listings.
+   *
+   * Returns [ { id, name, price, zipcode, capacity, amenitites, photoUrl }, ...]
+   *
+   * Throws NotFoundError if not found.
+   **/
+
+  static async search(term) {
+    const listingRes = await db.query(
+          `SELECT id,
+                  name,
+                  price,
+                  zipcode,
+                  capacity,
+                  amenities,
+                  photo_url AS "photoUrl"
+           FROM listings
+           WHERE name ILIKE $1`,
+        [`%${term}%`]);
+
+    const listings = listingRes.rows;
+
+    if (!listings[0]) throw new NotFoundError(`No listings matched term: ${term}`);
+
+    return listings;
   }
 
   /** Update listing data with `data`.
@@ -137,16 +180,16 @@ class Listing {
    * Throws NotFoundError if listing not found.
    **/
 
-  static async remove(handle) {
+  static async remove(id) {
     const result = await db.query(
           `DELETE
            FROM listings
-           WHERE handle = $1
-           RETURNING handle`,
-        [handle]);
+           WHERE id = $1
+           RETURNING id`,
+        [id]);
     const listing = result.rows[0];
 
-    if (!listing) throw new NotFoundError(`No listing: ${handle}`);
+    if (!listing) throw new NotFoundError(`No listing: ${id}`);
   }
 
   /** Translate data to filter into SQL Format.
