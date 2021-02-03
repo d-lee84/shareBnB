@@ -17,25 +17,19 @@ const REGION = "us-west-1"; //e.g. "us-east-1"
 // Create S3 service object
 const s3 = new S3Client({ region: REGION });
 
-// bucket: arn:aws:s3:::sharebnb-photos-dlee
+
 async function uploadToS3Bucket(file) {
+  const key = uuid();
   try {
     const data = await s3.send(new PutObjectCommand({
       Bucket: S3_BUCKET_NAME,
-      Key: uuid(),
+      Key: key,
       Body: file.buffer
     }));
     console.log("Success", data);
   } catch (err) {
     console.log("Error", err);
   }
-  // console.log(s3);
-  // let resp = s3.putObject(, function(err,data) {
-  //   if(err) {
-  //    console.log(err,err.stack);
-  //   }
-  //   else {
-  //    console.log(data);
-  //   }
+  return `https://${S3_BUCKET_NAME}.s3-us-west-1.amazonaws.com/${key}`
 };
 module.exports = { uploadToS3Bucket };

@@ -38,7 +38,8 @@ router.post("/", ensureLoggedIn, upload.array('photo', 1), async function (req, 
   // }
   const image = req.files[0];
   console.log(image);
-  uploadToS3Bucket(image);
+  const fileName = await uploadToS3Bucket(image);
+  req.body.photoUrl = fileName;
   const listing = await Listing.create(req.body);
   return res.status(201).json({ listing });
 });
