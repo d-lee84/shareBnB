@@ -6,7 +6,7 @@
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureAdmin } = require("../middleware/auth");
+const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const Listing = require("../models/listing");
 
 // const listingNewSchema = require("../schemas/listingNew.json");
@@ -18,19 +18,19 @@ const router = new express.Router();
 
 /** POST / { listing } =>  { listing }
  *
- * listing should be { handle, name, description, numEmployees, logoUrl }
+ * listing should be { name, price, zipcode, capacity, description, amenities, photo..., hostId }
  *
- * Returns { handle, name, description, numEmployees, logoUrl }
+ * Returns { id, name, price, zipcode, capacity, description, amenities, photoUrl, hostId }
  *
- * Authorization required: admin
+ * Authorization required: logged in
  */
 
-router.post("/", ensureAdmin, async function (req, res, next) {
-  const validator = jsonschema.validate(req.body, listingNewSchema);
-  if (!validator.valid) {
-    const errs = validator.errors.map(e => e.stack);
-    throw new BadRequestError(errs);
-  }
+router.post("/", ensureLoggedIn, async function (req, res, next) {
+  // const validator = jsonschema.validate(req.body, listingNewSchema);
+  // if (!validator.valid) {
+  //   const errs = validator.errors.map(e => e.stack);
+  //   throw new BadRequestError(errs);
+  // }
 
   const listing = await Listing.create(req.body);
   return res.status(201).json({ listing });

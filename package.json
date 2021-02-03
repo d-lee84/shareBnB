@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/d-lee84/shareBnB#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.4.1",
     "bcrypt": "^5.0.0",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
@@ -26,6 +27,7 @@
     "jsonschema": "^1.4.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
-    "pg": "^8.5.1"
+    "pg": "^8.5.1",
+    "uuid": "^8.3.2"
   }
 }
