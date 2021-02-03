@@ -30,6 +30,6 @@ async function uploadToS3Bucket(file) {
   } catch (err) {
     console.log("Error", err);
   }
-  return `https://${S3_BUCKET_NAME}.s3-us-west-1.amazonaws.com/${key}`
+  return `https://${S3_BUCKET_NAME}.s3-us-west-1.amazonaws.com/${key}.jpg`
 };
 module.exports = { uploadToS3Bucket };
