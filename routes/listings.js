@@ -5,6 +5,9 @@
 // const jsonschema = require("jsonschema");
 const express = require("express");
 
+const multer = require('multer');
+const upload = multer();
+
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const Listing = require("../models/listing");
@@ -25,12 +28,16 @@ const router = new express.Router();
  * Authorization required: logged in
  */
 
-router.post("/", ensureLoggedIn, async function (req, res, next) {
+router.post("/", ensureLoggedIn, upload.array('photo', 1), async function (req, res, next) {
+  // req.body has the text inputs
+  // req.files has the array of files
   // const validator = jsonschema.validate(req.body, listingNewSchema);
   // if (!validator.valid) {
   //   const errs = validator.errors.map(e => e.stack);
   //   throw new BadRequestError(errs);
   // }
+
+  console.log(req.files);
 
   const listing = await Listing.create(req.body);
   return res.status(201).json({ listing });
