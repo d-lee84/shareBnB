@@ -20,7 +20,7 @@ class Listing {
                        capacity,
                        description,
                        amenities,
-                       photo_url,
+                       photoUrl,
                        hostId }) {
     const result = await db.query(
           `INSERT INTO listings
@@ -39,7 +39,7 @@ class Listing {
                       capacity,
                       description,
                       amenities,
-                      photo_url,
+                      photo_url AS "photoUrl",
                       host_id`,
         [
           name,
@@ -48,7 +48,7 @@ class Listing {
           capacity,
           description,
           amenities,
-          photo_url,
+          photoUrl,
           hostId
         ],
     );
