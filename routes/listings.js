@@ -67,15 +67,15 @@ router.get("/", async function (req, res, next) {
 
 router.get("/search", async function (req, res, next) {
   const q = req.query;
-  const listing = await Listing.search(q.term);
-  return res.json({ listing });
+  const listings = await Listing.search(q.term);
+  return res.json({ listings });
 });
 
 /** GET /listings/[id]  =>  { listing }
  *  Gets a single listing for Listing Detail page.
  *  listing is
  *    { id, name, price, zipcode, capacity, photo_url, description, amenities, host }
- * 
+ *
  *   where host is {username, first_name, last_name }
  *
  * Authorization required: none
