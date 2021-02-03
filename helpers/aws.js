@@ -24,12 +24,13 @@ async function uploadToS3Bucket(file) {
     const data = await s3.send(new PutObjectCommand({
       Bucket: S3_BUCKET_NAME,
       Key: key,
-      Body: file.buffer
+      Body: file.buffer,
+      ContentType: file.mimetype
     }));
     console.log("Success", data);
   } catch (err) {
     console.log("Error", err);
   }
-  return `https://${S3_BUCKET_NAME}.s3-us-west-1.amazonaws.com/${key}.jpg`
+  return `https://${S3_BUCKET_NAME}.s3-us-west-1.amazonaws.com/${key}`
 };
 module.exports = { uploadToS3Bucket };
