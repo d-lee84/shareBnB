@@ -96,56 +96,6 @@ class User {
     return user;
   }
 
-  /** Find all users.
-   *
-   * Returns [{ username, first_name, last_name, email, is_admin, jobs }, ...]
-   *  where jobs: [ jobId, jobId, ... ]
-   **/
-
-  static async findAll() {
-    const userResult = await db.query(
-      `SELECT username,
-              first_name AS "firstName",
-              last_name AS "lastName",
-              email,
-              is_admin AS "isAdmin"
-           FROM users
-           ORDER BY username`,
-    );
-
-    let users = userResult.rows;
-
-    const usersJobsResult = await db.query(
-      `SELECT username,
-              job_id AS "jobId"
-           FROM applications
-           ORDER BY username`,
-    );
-
-    // [{username, jobId}, ...]
-    let userJobInfos = usersJobsResult.rows;
-
-    //  {"u1": [j1, j2]}
-    let usernameToJobs = {};
-
-
-    for (let userJobInfo of userJobInfos) {
-      let { username, jobId } = userJobInfo;
-
-      if (usernameToJobs[username] === undefined) {
-        usernameToJobs[username] = [jobId];
-      } else {
-        usernameToJobs[username].push(jobId);
-      }
-    }
-
-    for (let user of users) {
-      user.jobs = usernameToJobs[user.username] || [];
-    }
-
-    return users;
-  }
-
   /** Given a username, return data about user.
    *
    * Returns { username, first_name, last_name, is_admin }
@@ -155,7 +105,8 @@ class User {
 
   static async get(username) {
     const userRes = await db.query(
-      `SELECT username,
+      `SELECT id,
+              username,
               first_name AS "firstName",
               last_name AS "lastName",
               email,
@@ -203,9 +154,9 @@ class User {
       });
     const usernameVarIdx = "$" + (values.length + 1);
 
-    const querySql = `UPDATE users 
-                      SET ${setCols} 
-                      WHERE username = ${usernameVarIdx} 
+    const querySql = `UPDATE users
+                      SET ${setCols}
+                      WHERE username = ${usernameVarIdx}
                       RETURNING username,
                                 first_name AS "firstName",
                                 last_name AS "lastName",
@@ -236,7 +187,7 @@ class User {
   }
 
   /** Given a username and jobId, add a job application
-   * 
+   *
    * Throws NotFoundError if username or jobId is not found.
   */
 
@@ -263,7 +214,7 @@ class User {
     // check if a user already applied to this job
     const appRes = await db.query(
       `SELECT username, job_id AS "jobId"
-          FROM applications 
+          FROM applications
           WHERE username=$1 AND job_id = $2`,
       [username, jobId]);
     const application = appRes.rows[0];
@@ -279,7 +230,7 @@ class User {
 
   /** Given a username and jobId and status, update status for
    * job application.
-   * 
+   *
    * Throws NotFoundError if username, jobId, or app is not found.
    * Throw bad request error if state is invalid
   */
@@ -307,7 +258,7 @@ class User {
     // check if application exists
     const appRes = await db.query(
       `SELECT username, job_id AS "jobId"
-        FROM applications 
+        FROM applications
         WHERE username=$1 AND job_id = $2`,
       [username, jobId]);
     const application = appRes.rows[0];
@@ -320,7 +271,7 @@ class User {
 
     // update job application
     await db.query(`
-    UPDATE applications 
+    UPDATE applications
     SET state=$1
     WHERE username=$2 AND job_id=$3`, [state, username, jobId]);
   }
