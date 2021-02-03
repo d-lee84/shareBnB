@@ -11,6 +11,7 @@ const PORT = +process.env.PORT || 3001;
 
 const ACCESS_KEY = process.env.ACCESS_KEY;
 const AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
+const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 // Use dev database, testing database, or via env var, production database
 function getDatabaseUri() {
@@ -37,5 +38,6 @@ module.exports = {
   BCRYPT_WORK_FACTOR,
   getDatabaseUri,
   ACCESS_KEY,
-  AWS_SECRET_KEY
+  AWS_SECRET_KEY,
+  S3_BUCKET_NAME
 };

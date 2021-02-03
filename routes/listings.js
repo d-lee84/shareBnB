@@ -7,7 +7,7 @@ const express = require("express");
 
 const multer = require('multer');
 const upload = multer();
-
+const { uploadToS3Bucket } = require('../helpers/aws');
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const Listing = require("../models/listing");
@@ -36,9 +36,9 @@ router.post("/", ensureLoggedIn, upload.array('photo', 1), async function (req, 
   //   const errs = validator.errors.map(e => e.stack);
   //   throw new BadRequestError(errs);
   // }
-
-  console.log(req.files);
-
+  const image = req.files[0];
+  console.log(image);
+  uploadToS3Bucket(image);
   const listing = await Listing.create(req.body);
   return res.status(201).json({ listing });
 });
