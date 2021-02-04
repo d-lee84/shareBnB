@@ -10,10 +10,17 @@ CREATE TABLE users (
 );
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
-    guest_id INTEGER REFERENCES users,
-    host_id INTEGER REFERENCES users,
+    to_id INTEGER REFERENCES users,
+    from_id INTEGER REFERENCES users,
+    thread_id INTEGER REFERENCES message_threads,
     content TEXT NOT NULL,
     sent_at timestamp DEFAULT NOW()
+);
+
+CREATE TABLE message_threads (
+    id SERIAL PRIMARY KEY,
+    listing_id INTEGER REFERENCES listings,
+    started_at timestamp DEFAULT NOW()
 );
 
 CREATE TABLE listings (
@@ -27,23 +34,3 @@ CREATE TABLE listings (
     photo_url TEXT DEFAULT 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80',
     host_id INTEGER REFERENCES users
 );
-
--- CREATE TABLE jobs (
---   id SERIAL PRIMARY KEY,
---   title TEXT NOT NULL,
---   salary INTEGER CHECK (salary >= 0),
---   equity NUMERIC CHECK (equity <= 1.0),
---   company_handle VARCHAR(25) NOT NULL
---     REFERENCES companies ON DELETE CASCADE
--- );
-
--- CREATE TYPE state_type AS ENUM ('interested', 'applied', 'accepted', 'rejected');
-
--- CREATE TABLE applications (
---   username VARCHAR(25)
---     REFERENCES users ON DELETE CASCADE,
---   job_id INTEGER
---     REFERENCES jobs ON DELETE CASCADE,
---   state state_type,
---   PRIMARY KEY (username, job_id)
--- );
