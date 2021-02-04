@@ -27,7 +27,7 @@ async function uploadToS3Bucket(file) {
       Key: key,
       Body: file.buffer,
       ContentType: "image/jpeg",
-      tagging: "public=yes"
+      Tagging: "public=yes"
     }));
     console.log("Success", data);
   } catch (err) {
