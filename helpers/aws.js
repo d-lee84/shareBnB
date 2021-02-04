@@ -1,6 +1,6 @@
 'use strict';
 
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand, S3CannedACL } = require("@aws-sdk/client-s3");
 const { v4: uuid } = require("uuid");
 const { S3_BUCKET_NAME } = require("../config");
 
@@ -25,7 +25,8 @@ async function uploadToS3Bucket(file) {
       Bucket: S3_BUCKET_NAME,
       Key: key,
       Body: file.buffer,
-      ContentType: file.mimetype
+      ContentType: "image/jpeg",
+      ObjectCannedACL:'public-read',
     }));
     console.log("Success", data);
   } catch (err) {
