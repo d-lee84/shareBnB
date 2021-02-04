@@ -50,3 +50,14 @@ Bonus: to work on in case there's extra time
 - Favorites: like/star button to favorite a listing
 - Check-in/Check-out
 - Have amenities be many-to-many or using an array?
+
+
+Messages 
+- Database set up for sending and receiving messages 
+    - To & From Id's
+- Configure routes to view the specific "threads" of messages (to and from)
+    - Button to compose new message 
+    (messaging a host for a listing you're looking at).
+    Button at the listing details page
+    - "/messages": Display a list of users who have sent you messages
+    - We only need to configure routes to "/messages/from/:id"
