@@ -1,6 +1,6 @@
 'use strict';
 
-const { S3Client, PutObjectCommand, S3CannedACL } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand  } = require("@aws-sdk/client-s3");
 const { v4: uuid } = require("uuid");
 const { S3_BUCKET_NAME } = require("../config");
 
@@ -18,6 +18,7 @@ const REGION = "us-west-1"; //e.g. "us-east-1"
 const s3 = new S3Client({ region: REGION });
 
 
+
 async function uploadToS3Bucket(file) {
   const key = uuid();
   try {
@@ -26,7 +27,7 @@ async function uploadToS3Bucket(file) {
       Key: key,
       Body: file.buffer,
       ContentType: "image/jpeg",
-      ObjectCannedACL:'public-read',
+      tagging: "public=yes"
     }));
     console.log("Success", data);
   } catch (err) {
