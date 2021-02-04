@@ -8,11 +8,18 @@ CREATE TABLE users (
         CHECK (position('@' IN email) > 1),
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    guest_id INTEGER REFERENCES users,
+    host_id INTEGER REFERENCES users,
+    content TEXT NOT NULL,
+    sent_at timestamp DEFAULT NOW()
+);
 
 CREATE TABLE listings (
     id SERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
-    price NUMERIC(6, 2) NOT NULL, 
+    price NUMERIC(6, 2) NOT NULL,
     zipcode VARCHAR(10) NOT NULL,
     capacity INTEGER CHECK (capacity < 13),
     description TEXT,
