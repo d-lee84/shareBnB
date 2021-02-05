@@ -2,11 +2,16 @@
 
 /** Routes for authentication. */
 
+const jsonschema = require("jsonschema");
+
 const User = require("../models/user");
 const express = require("express");
 const router = new express.Router();
 const { createToken } = require("../helpers/tokens");
 const { BadRequestError } = require("../expressError");
+
+const userAuthSchema = require("../schemas/userAuth.json");
+const userRegisterSchema = require("../schemas/userRegister.json");
 
 /** POST /auth/token:  { username, password } => { token }
  *
