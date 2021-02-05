@@ -20,6 +20,8 @@ CREATE TABLE messages (
 CREATE TABLE message_threads (
     id SERIAL PRIMARY KEY,
     listing_id INTEGER REFERENCES listings,
+    host_id INTEGER REFERENCES users,
+    guest_id INTEGER REFERENCES users,
     started_at timestamp DEFAULT NOW()
 );
 
