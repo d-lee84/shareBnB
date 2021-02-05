@@ -47,7 +47,7 @@ class Message {
            FROM messages
            WHERE (from_id = $1 AND to_id = $2) OR
                  (from_id = $2 AND to_id = $1)
-           ORDER BY sent_at DESC`,
+           ORDER BY sent_at`,
         [userId1, userId2]);
 
     const messages = messageRes.rows;
@@ -68,7 +68,7 @@ class Message {
                   sent_at AS "sentAt"
            FROM messages
            WHERE thread_id = $1
-           ORDER BY sent_at DESC`,
+           ORDER BY sent_at`,
         [threadId]);
 
     const messages = messageRes.rows;
