@@ -82,9 +82,9 @@ class Listing {
 
   /** Given a listing handle, return data about listing.
    *
-   * Returns [ { id, name, price, zipcode, capacity, photoUrl }, ...]
-
-   *   where jobs is [{ id, title, salary, equity }, ...]
+   * Returns { id, name, description, price, zipcode, 
+   *          capacity, amenities, photoUrl, host }
+   *   where host is { id, username, firstName, lastName }
    *
    * Throws NotFoundError if not found.
    **/
@@ -109,7 +109,8 @@ class Listing {
     if (!listing) throw new NotFoundError(`No listing: ${handle}`);
 
     const hostRes = await db.query(
-      `SELECT username,
+      `SELECT id,
+              username,
               first_name AS "firstName",
               last_name AS "lastName"
            FROM users
