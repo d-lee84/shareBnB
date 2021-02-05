@@ -29,7 +29,8 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
   //   const errs = validator.errors.map(e => e.stack);
   //   throw new BadRequestError(errs);
   // }
-  const message = await Message.create(req.body);
+  const { toId, fromId, content, threadId } = req.body;
+  const message = await Message.create({ toId, fromId, content, threadId });
   return res.status(201).json({ message });
 });
 
