@@ -32,20 +32,43 @@ class Thread {
     return thread;
   }
 
-  /** Get all threads for a user
-   * { id, listingId, hostId, guestId, startedAt }
+  /** Get all threads for a host
+   * [{ id, listingId, hostId, guestId, startedAt, fromUsername }, ...]
    */
-  static async getAllThreadsForUser({userId}){
+  static async getThreadsForHost({hostId}){
     const result = await db.query(
-        `SELECT id,
+        `SELECT mt.id,
                 listing_id AS "listingId",
                 host_id AS "hostId,
                 guest_id AS "guestId"
                 started_at AS "startedAt"
-        FROM    message_threads
+                username AS "fromUsername"
+        FROM    message_threads mt
+          JOIN users u ON guest_id = u.id
+        WHERE   host_id=$1`,
+      [hostId]);
+
+    const threads = result.rows;
+    return threads;
+  }
+
+  /** Get all threads for a guest
+   * [{ id, listingId, hostId, guestId, startedAt, fromUsername }, ...]
+   */
+  static async getThreadsForGuest({guestId}){
+    const result = await db.query(
+        `SELECT mt.id,
+                listing_id AS "listingId",
+                host_id AS "hostId,
+                guest_id AS "guestId"
+                started_at AS "startedAt"
+                username AS "fromUsername"
+        FROM    message_threads mt
+          JOIN users u ON host_id = u.id
         WHERE   host_id=$1
         OR      guest_id=$1`,
-      [userId]);
+      [guestId]);
+
     const threads = result.rows;
     return threads;
   }

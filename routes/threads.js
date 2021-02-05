@@ -7,16 +7,28 @@ const { ensureLoggedIn, ensureAdminOrSelf } = require("../middleware/auth");
 const Thread = require("../models/thread");
 const router = new express.Router();
 
-/** GET /threads/:userId  =>
- *   { threads: [ { id, listingId, hostId, guestId, startedAt }, ...] }
+/** GET /threads/host/:userId  =>
+ *   { threads: [ { id, listingId, hostId, guestId, startedAt, guestUsername }, ...] }
  *
  * Authorization required: Admin or self
  */
 
-router.get("/:userId", ensureAdminOrSelf, async function (req, res, next) {
+router.get("/host/:userId", ensureAdminOrSelf, async function (req, res, next) {
   const userId = req.params.userId;
 
-  const threads = await Thread.getAllThreadsForUser(userId);
+  const threads = await Thread.getThreadsForHost(userId);
+  return res.json({ threads });
+});
+
+/** GET /threads/guest/:userId  =>
+ *   { threads: [ { id, listingId, hostId, guestId, startedAt, hostUsername }, ...] }
+ *
+ * Authorization required: Admin or self
+ */
+router.get("/guest/:userId", ensureAdminOrSelf, async function (req, res, next) {
+  const userId = req.params.userId;
+
+  const threads = await Thread.getThreadsForGuest(userId);
   return res.json({ threads });
 });
 
