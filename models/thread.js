@@ -1,21 +1,12 @@
 "use strict";
 
-const { user } = require("../db");
 const db = require("../db");
-const { BadRequestError, NotFoundError } = require("../expressError");
 
 /** Related functions for threads. */
 class Thread {
   /** Create a thread (from data), update db, return new thread data.
    *
-   * { id, listingId, startedAt }
-   *Schema:
-        id SERIAL PRIMARY KEY,
-        listing_id INTEGER REFERENCES listings,
-        host_id INTEGER REFERENCES users,
-        guest_id INTEGER REFERENCES users,
-        started_at timestamp DEFAULT NOW()
-   *
+   *  Returns { id, listingId, startedAt }
    * */
   static async create({ listingId, hostId, guestId }) {
     const result = await db.query(
@@ -58,7 +49,6 @@ class Thread {
    * [{ id, listingId, hostId, guestId, startedAt, fromUsername }, ...]
    */
   static async getThreadsForGuest(guestId){
-    console.log(guestId);
     const result = await db.query(
         `SELECT mt.id,
                 listing_id AS "listingId",
@@ -72,7 +62,6 @@ class Thread {
       [guestId]);
 
     const threads = result.rows;
-    console.log(threads);
     return threads;
   }
 }

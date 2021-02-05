@@ -1,7 +1,7 @@
 "use strict";
 
 const db = require("../db");
-const { BadRequestError, NotFoundError } = require("../expressError");
+const { BadRequestError} = require("../expressError");
 
 /** Related functions for messages. */
 class Message {
