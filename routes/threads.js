@@ -13,7 +13,7 @@ const router = new express.Router();
  * Authorization required: Admin or self
  */
 
-router.get("/host/:userId", ensureAdminOrSelf, async function (req, res, next) {
+router.get("/host/:userId", ensureLoggedIn, async function (req, res, next) {
   const userId = req.params.userId;
 
   const threads = await Thread.getThreadsForHost(userId);
@@ -25,7 +25,7 @@ router.get("/host/:userId", ensureAdminOrSelf, async function (req, res, next) {
  *
  * Authorization required: Admin or self
  */
-router.get("/guest/:userId", ensureAdminOrSelf, async function (req, res, next) {
+router.get("/guest/:userId", ensureLoggedIn, async function (req, res, next) {
   const userId = req.params.userId;
 
   const threads = await Thread.getThreadsForGuest(userId);
