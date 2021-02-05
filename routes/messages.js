@@ -2,7 +2,6 @@
 
 /** Routes for messages. */
 const express = require("express");
-const { BadRequestError } = require("../expressError");
 const { ensureLoggedIn } = require("../middleware/auth");
 const Message = require("../models/message");
 
@@ -17,7 +16,6 @@ const router = new express.Router();
  *
  * Authorization required: logged in
  */
-
 router.post("/", ensureLoggedIn, async function (req, res, next) {
   const { toId, fromId, content, threadId } = req.body;
   const message = await Message.create({ toId, fromId, content, threadId });
@@ -33,7 +31,6 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * 
  * Authorization required: logged in
  */
-
 router.get("/:threadId", ensureLoggedIn, async function (req, res, next) {
   const threadId = req.params.threadId;
   const messages = await Message.getMessagesFromThread(threadId);

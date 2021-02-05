@@ -2,15 +2,14 @@
 
 /** Routes for Thread. */
 const express = require("express");
-const { BadRequestError } = require("../expressError");
-const { ensureLoggedIn, ensureAdminOrSelf } = require("../middleware/auth");
+const { ensureLoggedIn } = require("../middleware/auth");
 const Thread = require("../models/thread");
 const router = new express.Router();
 
 /** GET /threads/host/:userId  =>
- *   { threads: [ { id, listingId, hostId, guestId, startedAt, guestUsername }, ...] }
+ *   { threads: [ { id, listingId, hostId, guestId, startedAt, fromUsername }, ...] }
  *
- * Authorization required: Admin or self
+ * Authorization required: logged in
  */
 
 router.get("/host/:userId", ensureLoggedIn, async function (req, res, next) {
@@ -21,9 +20,9 @@ router.get("/host/:userId", ensureLoggedIn, async function (req, res, next) {
 });
 
 /** GET /threads/guest/:userId  =>
- *   { threads: [ { id, listingId, hostId, guestId, startedAt, hostUsername }, ...] }
+ *   { threads: [ { id, listingId, hostId, guestId, startedAt, fromUsername }, ...] }
  *
- * Authorization required: Admin or self
+ * Authorization required: logged in
  */
 router.get("/guest/:userId", ensureLoggedIn, async function (req, res, next) {
   const userId = req.params.userId;
@@ -32,13 +31,11 @@ router.get("/guest/:userId", ensureLoggedIn, async function (req, res, next) {
   return res.json({ threads });
 });
 
-
 /** POST /threads  =>
  *   { thread: { id, listingId, hostId, guestId, startedAt } }
  *
  * Authorization required: LoggedIn
  */
-
 router.post("/", ensureLoggedIn, async function (req, res, next) {
   const { listingId, hostId, guestId } = req.body
   const thread = await Thread.create({ listingId, hostId, guestId });
